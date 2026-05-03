@@ -16,7 +16,6 @@
         .animate-dog { animation: dogBounce 1.5s infinite ease-in-out; }
         .serif-font { font-family: "Georgia", "Times New Roman", "Source Han Serif SC", serif; }
         
-        /* 增加可爱的背景纹理 */
         .bg-pattern {
             background-color: #f5f4f0;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e5e4df' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5 40c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/%3E%3C/g%3E%3C/svg%3E");
@@ -37,8 +36,6 @@
 
         html, body { height: 100%; margin: 0; overflow: hidden; }
         #root { height: 100%; }
-
-        /* 自定义滚动条（以防万一） */
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -115,10 +112,7 @@
 
             return (
                 <div className="flex justify-center h-full items-center p-2 sm:p-4">
-                    {/* 卡片主体 */}
                     <div className="w-full max-w-[390px] h-[92vh] sm:h-[844px] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col relative border-4 border-stone-800">
-                        
-                        {/* 装饰性的小爪子和便便 */}
                         <div className="absolute top-4 left-4 text-xl opacity-20 rotate-[-20deg]">🐾</div>
                         <div className="absolute top-10 right-6 text-xl opacity-10 rotate-[15deg]">💩</div>
                         <div className="absolute bottom-20 left-10 text-2xl opacity-10">🐾</div>
@@ -148,11 +142,7 @@
                                     <div className="w-full bg-stone-100 h-3 rounded-full border-2 border-stone-800 overflow-hidden mb-10">
                                         <div className="bg-yellow-400 h-full transition-all duration-300" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
                                     </div>
-                                    
-                                    <h2 className="text-2xl font-black text-stone-800 mb-10 leading-tight text-left">
-                                        {questions[currentQIndex].text}
-                                    </h2>
-                                    
+                                    <h2 className="text-2xl font-black text-stone-800 mb-10 leading-tight text-left">{questions[currentQIndex].text}</h2>
                                     <div className="space-y-4 flex-1">
                                         {questions[currentQIndex].options.map((opt, i) => (
                                             <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-5 border-4 border-stone-800 rounded-2xl hover:bg-yellow-50 active:bg-yellow-100 transition-all font-bold text-stone-800 text-md text-left flex items-center gap-3">
@@ -161,7 +151,6 @@
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="text-center opacity-30 text-xs font-bold mt-4">WATCH OUT FOR 💩!</div>
                                 </div>
                             )}
 
@@ -169,20 +158,11 @@
                                 <div className="flex flex-col h-full justify-between py-1 animate-fade-in">
                                     <div id="final-card" className="flex-1 min-h-0 flex flex-col items-center justify-center">
                                         
-                                        {/* 照片框 */}
+                                        {/* 照片展示区 */}
                                         <div className="relative w-full flex-1 max-h-[60%] border-4 border-stone-800 p-3 bg-white shadow-[8px_8px_0px_rgba(0,0,0,0.1)] mb-6 transform rotate-[-1deg]">
                                             <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative border-2 border-stone-100">
                                                 {userPhoto ? (
-                                                    <div className="relative w-full h-full group">
-                                                        <img src={userPhoto} className="w-full h-full object-cover" />
-                                                        {/* 重新上传按钮 */}
-                                                        <div 
-                                                            onClick={() => document.getElementById('dogInput').click()}
-                                                            className="absolute top-2 right-2 bg-stone-800/80 text-white p-2 rounded-full backdrop-blur-sm pointer-events-auto cursor-pointer active:scale-90 transition-transform z-50"
-                                                        >
-                                                            <span className="text-xs">🔄 更换</span>
-                                                        </div>
-                                                    </div>
+                                                    <img src={userPhoto} className="w-full h-full object-cover" />
                                                 ) : (
                                                     <div onClick={() => document.getElementById('dogInput').click()} className="cursor-pointer text-center p-4 group">
                                                         <div className="text-5xl group-hover:scale-110 transition-transform">📸</div>
@@ -190,7 +170,6 @@
                                                     </div>
                                                 )}
                                                 <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
-                                                
                                                 <div className="absolute bottom-2 left-2 w-14 h-14 stamp flex-col leading-none bg-white/40 backdrop-blur-[2px]">
                                                     <span>SECRET</span>
                                                     <span>FILE</span>
@@ -199,15 +178,12 @@
                                             </div>
                                         </div>
 
-                                        {/* 文字排版 */}
                                         <div className="text-center w-full px-2">
                                             <div className="inline-block bg-yellow-300 text-stone-800 font-black text-xs px-3 py-1 mb-2 transform rotate-2 shadow-[2px_2px_0px_#000]">
                                                 {finalType}
                                             </div>
                                             <h2 className="text-4xl font-black text-stone-800 mb-3 tracking-tighter uppercase">{resultsData[finalType].title}</h2>
-                                            <div className="serif-font text-stone-700 text-sm leading-relaxed max-w-[280px] mx-auto italic">
-                                                “{resultsData[finalType].desc}”
-                                            </div>
+                                            <div className="serif-font text-stone-700 text-sm leading-relaxed max-w-[280px] mx-auto italic">“{resultsData[finalType].desc}”</div>
                                             <div className="mt-4 flex justify-center gap-2">
                                                 {resultsData[finalType].tags.map(tag => (
                                                     <span key={tag} className="text-[10px] font-black text-stone-400 uppercase tracking-widest">#{tag}</span>
@@ -216,17 +192,11 @@
                                         </div>
                                     </div>
 
-                                    {/* 底部按钮 */}
                                     <div className="pt-4 flex gap-3">
-                                        <button 
-                                            onClick={() => window.location.reload()}
-                                            className="flex-1 py-4 text-xs font-black uppercase tracking-widest bg-stone-100 border-4 border-stone-800 rounded-xl hover:bg-stone-200 transition-all shadow-[4px_4px_0px_#292524] active:shadow-none active:translate-x-1 active:translate-y-1"
-                                        >
+                                        <button onClick={() => window.location.reload()} className="flex-1 py-4 text-xs font-black uppercase tracking-widest bg-stone-100 border-4 border-stone-800 rounded-xl hover:bg-stone-200 transition-all shadow-[4px_4px_0px_#292524] active:shadow-none active:translate-x-1 active:translate-y-1">
                                             RETAKE 🐾
                                         </button>
-                                        <div className="bg-stone-800 text-white p-4 rounded-xl flex items-center shadow-[4px_4px_0px_#292524]">
-                                            💩
-                                        </div>
+                                        <div className="bg-stone-800 text-white p-4 rounded-xl flex items-center shadow-[4px_4px_0px_#292524]">💩</div>
                                     </div>
                                 </div>
                             )}
