@@ -35,7 +35,6 @@
             text-transform: uppercase;
         }
 
-        /* 解决移动端滚动和高度问题的核心样式 */
         html, body { 
             height: 100%; 
             margin: 0; 
@@ -49,12 +48,28 @@
             width: 100%;
         }
 
+        /* 核心逻辑：锁定容器尺寸 */
+        .main-container {
+            width: 90vw;
+            max-width: 380px;
+            /* 使用 aspect-ratio 确保无论内容多少，黑框宽高比永远固定 */
+            aspect-ratio: 380 / 760; 
+            background: white;
+            border-radius: 60px;
+            border: 8px solid #1c1917; /* 统一边框粗细 */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
         .instax-photo-area {
             width: 100%;
             aspect-ratio: 46 / 62;
             background: white;
             padding: 12px 12px 35px 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -150,23 +165,22 @@
             return (
                 <div className="w-full h-full flex items-center justify-center p-4 box-border" style={{ minHeight: '100dvh' }}>
                     
-                    {/* 卡片主体：彻底修复遮挡问题 */}
-                    <div className="w-full max-w-[380px] h-fit bg-white rounded-[40px] shadow-[0_20px_60px_rgba(0,0,0,0.15)] flex flex-col relative border-[6px] border-stone-800 overflow-hidden">
+                    {/* 使用 main-container 类锁定全局统一宽高 */}
+                    <div className="main-container">
                         
-                        {/* 装饰图标 */}
                         <div className="absolute top-6 left-6 text-xl opacity-20 rotate-[-20deg]">🐾</div>
                         <div className="absolute top-10 right-8 text-xl opacity-10 rotate-[15deg]">💩</div>
 
-                        <div className="p-6 flex flex-col w-full relative z-10">
+                        <div className="p-8 flex flex-col h-full relative z-10">
                             
                             {gameState === 'start' && (
-                                <div className="py-12 flex flex-col items-center text-center">
-                                    <div className="relative mb-10">
+                                <div className="h-full flex flex-col items-center justify-center text-center">
+                                    <div className="relative mb-12">
                                         <div className="text-8xl animate-dog">🐶</div>
                                         <div className="absolute -bottom-2 -right-4 text-3xl">🦴</div>
                                     </div>
                                     <h1 className="text-4xl font-black text-stone-800 mb-2 tracking-tighter">PAW PAW BI</h1>
-                                    <p className="text-stone-500 font-bold text-sm mb-12 border-b-2 border-stone-800 pb-1 px-4">汪星人 绝密 档案</p>
+                                    <p className="text-stone-500 font-bold text-sm mb-16 border-b-2 border-stone-800 pb-1 px-4">汪星人 绝密 档案</p>
                                     <button onClick={() => setGameState('playing')} className="w-64 bg-stone-800 text-white font-bold py-5 rounded-2xl shadow-[6px_6px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all text-xl">
                                         START 🐾
                                     </button>
@@ -174,18 +188,18 @@
                             )}
 
                             {gameState === 'playing' && (
-                                <div className="flex flex-col">
-                                    <div className="mb-6 flex items-center justify-between">
+                                <div className="h-full flex flex-col">
+                                    <div className="mt-4 mb-6 flex items-center justify-between">
                                         <span className="text-[10px] font-black text-stone-400 tracking-widest uppercase">TESTING...</span>
                                         <span className="text-[10px] font-black text-stone-800">{currentQIndex + 1}/15</span>
                                     </div>
-                                    <div className="w-full bg-stone-100 h-2.5 rounded-full border-2 border-stone-800 overflow-hidden mb-8">
+                                    <div className="w-full bg-stone-100 h-2.5 rounded-full border-2 border-stone-800 overflow-hidden mb-12">
                                         <div className="bg-yellow-400 h-full transition-all" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
                                     </div>
-                                    <h2 className="text-2xl font-black text-stone-800 mb-8 leading-tight">{questions[currentQIndex].text}</h2>
-                                    <div className="space-y-3 pb-4">
+                                    <h2 className="text-2xl font-black text-stone-800 mb-10 leading-tight min-h-[80px]">{questions[currentQIndex].text}</h2>
+                                    <div className="space-y-4">
                                         {questions[currentQIndex].options.map((opt, i) => (
-                                            <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-5 border-[3px] border-stone-800 rounded-2xl hover:bg-yellow-50 active:bg-yellow-100 transition-all font-bold text-stone-800 text-md text-left flex items-center gap-3">
+                                            <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-6 border-[3px] border-stone-800 rounded-2xl hover:bg-yellow-50 active:bg-yellow-100 transition-all font-bold text-stone-800 text-md text-left flex items-center gap-3">
                                                 <span>{i === 0 ? '🐶' : '🦴'}</span>
                                                 {opt.text}
                                             </button>
@@ -195,10 +209,9 @@
                             )}
 
                             {gameState === 'result' && (
-                                <div className="flex flex-col animate-fade-in">
-                                    <div ref={resultRef} className="flex flex-col items-center bg-white p-2 rounded-3xl">
-                                        {/* 拍立得照片 */}
-                                        <div className="instax-photo-area transform rotate-[-1deg] mb-6">
+                                <div className="h-full flex flex-col justify-between animate-fade-in no-scrollbar overflow-y-auto">
+                                    <div ref={resultRef} className="flex flex-col items-center bg-white p-2">
+                                        <div className="instax-photo-area transform rotate-[-1deg] mb-8">
                                             <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative border border-stone-100">
                                                 {userPhoto ? (
                                                     <img src={userPhoto} className="w-full h-full object-cover" />
@@ -215,17 +228,17 @@
                                             </div>
                                         </div>
 
-                                        <div className="text-center mb-6">
+                                        <div className="text-center mb-4">
                                             <div className="inline-block bg-yellow-300 text-stone-800 font-black text-[10px] px-2 py-0.5 mb-2 shadow-[2.5px_2.5px_0px_#000]">
                                                 #{finalType}
                                             </div>
                                             <h2 className="text-3xl font-black text-stone-800 mb-2 uppercase">{resultsData[finalType].title}</h2>
-                                            <p className="serif-font text-stone-600 text-xs italic px-4 leading-relaxed">“{resultsData[finalType].desc}”</p>
+                                            <p className="serif-font text-stone-600 text-xs italic px-2 leading-relaxed">“{resultsData[finalType].desc}”</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col gap-3 mt-2 pb-2">
-                                        <button onClick={saveCardAsImage} className="w-full py-4 text-sm font-black uppercase bg-yellow-400 border-[4px] border-stone-800 rounded-2xl shadow-[5px_5px_0px_#000] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
+                                    <div className="flex flex-col gap-3 mt-auto pb-4">
+                                        <button onClick={saveCardAsImage} className="w-full py-5 text-sm font-black uppercase bg-yellow-400 border-[4px] border-stone-800 rounded-2xl shadow-[5px_5px_0px_#000] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
                                             SAVE PHOTO 📸
                                         </button>
                                         <button onClick={() => window.location.reload()} className="w-full py-2 text-[10px] font-black text-stone-400 uppercase tracking-widest">
