@@ -6,69 +6,59 @@
     <title>PawPaw BI - 汪星人性格测试</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap');
+
         @keyframes dogBounce {
             0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-15px) rotate(5deg); }
+            50% { transform: translateY(-12px) rotate(5deg); }
         }
         .animate-dog { animation: dogBounce 1.5s infinite ease-in-out; }
-        .serif-font { font-family: "Georgia", "Times New Roman", "Source Han Serif SC", serif; }
+        .serif-font { font-family: "Georgia", "Source Han Serif SC", serif; }
+        .handwriting { font-family: 'Reenie Beanie', cursive; }
         
         .bg-pattern {
             background-color: #f5f4f0;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e5e4df' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5 40c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/%3E%3C/g%3E%3C/svg%3E");
         }
 
-        .stamp {
-            border: 1.5px solid rgba(139, 92, 246, 0.5);
-            color: rgba(139, 92, 246, 0.6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: rotate(-15deg);
-            font-weight: bold;
-            font-size: 8px;
-            text-transform: uppercase;
-        }
-
-        html, body { 
-            height: 100%; 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; 
-            background-color: #f5f4f0;
-        }
-
-        #root { height: 100%; width: 100%; }
-
-        /* 优化：微调高度比例，增加上下间距余地 */
         .main-container {
             width: 88vw;
-            max-width: 360px;
-            aspect-ratio: 380 / 720; 
+            max-width: 350px;
+            aspect-ratio: 350 / 680; 
             background: white;
-            border-radius: 50px;
+            border-radius: 40px;
             border: 8px solid #1c1917; 
             position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
         }
 
         .instax-photo-area {
             width: 100%;
-            aspect-ratio: 46 / 62;
+            aspect-ratio: 46 / 58;
             background: white;
-            padding: 10px 10px 30px 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            padding: 10px 10px 28px 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04);
+            position: relative;
         }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .tape {
+            background: #fde047;
+            transform: rotate(-1.5deg);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .stat-bar { height: 4px; background: #f3f4f6; border-radius: 2px; width: 55px; overflow: hidden; }
+        .stat-fill { height: 100%; background: #1c1917; }
+
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f5f4f0; }
+        #root { height: 100%; width: 100%; }
     </style>
 </head>
 <body class="bg-pattern">
@@ -77,42 +67,35 @@
     <script type="text/babel">
         const { useState, useRef } = React;
 
-        const questions = [
-            { id: 1, text: "散步时遇到陌生的狗狗，它的第一反应通常是？", options: [{ text: "热情地冲上去闻屁股，疯狂摇尾巴交朋友", trait: "E" }, { text: "躲在你身后，或者假装没看见默默走开", trait: "I" }] },
-            { id: 2, text: "家里来陌生的客人时，它的表现是？", options: [{ text: "兴奋到模糊！扑上去求摸摸求关注", trait: "E" }, { text: "保持警惕，或者回到自己的窝里默默观察", trait: "I" }] },
-            { id: 3, text: "带它去宠物公园或者狗吧，它怎么玩？", options: [{ text: "满场飞奔，跟谁都能迅速打成一片", trait: "E" }, { text: "只喜欢跟着你，或者自己在角落闻闻嗅嗅", trait: "I" }] },
-            { id: 4, text: "去宠物医院或者洗澡时，它的状态是？", options: [{ text: "依然兴奋，甚至试图跟医生/美容师套近乎", trait: "E" }, { text: "吓得发抖，开启防御模式，试图逃跑", trait: "I" }] },
-            { id: 5, text: "如果它正在熟睡，什么声音能让它瞬间弹起？", options: [{ text: "零食袋撕开的“呲啦”声！", trait: "F" }, { text: "门外奇怪的脚步声或者门铃声", trait: "N" }] },
-            { id: 6, text: "你给它买了一个奇形怪状的新玩具，它会？", options: [{ text: "咬两口发现不能吃，就扔在一边不管了", trait: "F" }, { text: "兴奋地研究、拆解，能自己玩上好半天", trait: "N" }] },
-            { id: 7, text: "出门散步时，它最喜欢做的事情是？", options: [{ text: "低头狂吸，捡地上的不明物体试图品尝", trait: "F" }, { text: "追逐落叶、蝴蝶，或者盯着下水道看半天", trait: "N" }] },
-            { id: 8, text: "训练它学习新动作时，最有效的诱惑是？", options: [{ text: "绝对是好吃的肉干，没吃的不干活", trait: "F" }, { text: "夸张的赞美，或者它最爱的网球/玩具", trait: "N" }] },
-            { id: 9, text: "你坐在沙发上看电视，它通常会在哪里？", options: [{ text: "必须紧紧贴着你，甚至要坐在你身上", trait: "A" }, { text: "自己在狗窝里，或者沙发的另一端躺着", trait: "T" }] },
-            { id: 10, text: "你准备出门上班，关门那一刻它的眼神是？", options: [{ text: "依依不舍，甚至扒着门嘤嘤叫求带走", trait: "A" }, { text: "毫无波澜，甚至转身回窝准备补个回笼觉", trait: "T" }] },
-            { id: 11, text: "当它犯了错被你严厉批评时，它会？", options: [{ text: "飞机耳、翻肚皮，疯狂摇尾巴讨好求原谅", trait: "A" }, { text: "跟你顶嘴（对骂），或者扭头走开不理你", trait: "T" }] },
-            { id: 12, text: "晚上睡觉的时候，它的习惯是？", options: [{ text: "必须挤上你的床，最好能枕着你的胳膊睡", trait: "A" }, { text: "巡视一圈领地后，在自己的专属地盘睡", trait: "T" }] },
-            { id: 13, text: "面对它不喜欢吃的普通狗粮，它会？", options: [{ text: "叹口气，饿了还是会乖乖吃掉", trait: "J" }, { text: "直接打翻饭盆，或者绝食抗议直到你加肉", trait: "P" }] },
-            { id: 14, text: "当它独自在家大半天后，你回家看到的场景通常是？", options: [{ text: "一切如常，它甚至还在原来的位置睡觉", trait: "J" }, { text: "垃圾桶倒了，拖鞋少了一只，沙发有个坑...", trait: "P" }] },
-            { id: 15, text: "你突然大声叫它的名字，它通常的反应是？", options: [{ text: "立刻停下手头事跑过来（或者转头看你）", trait: "J" }, { text: "看心情，有时候装聋，有时候选择性听见", trait: "P" }] }
-        ];
-
         const resultsData = {
-            "EFAJ": { title: "甜心饭桶", desc: "万物皆可吃，只要你给的我都爱！最爱贴贴，社交满分的暖心小天使。", tags: ["社交悍匪", "干饭狂魔"] },
-            "EFAP": { title: "社交显眼包", desc: "为了混口饭吃什么绝活都能整出来，到处散发魅力，是个有点小调皮的公关大师。", tags: ["骗吃骗喝", "有点皮"] },
-            "EFTJ": { title: "巡场干饭王", desc: "热情开朗但很有原则（尤其是对食物），是个守规矩的好狗狗。", tags: ["热情保安", "吃饭第一"] },
-            "EFTP": { title: "街头小霸王", desc: "热情奔放，为了一口吃的敢于挑战一切规则，谁也管不住。", tags: ["放荡不羁", "为食痴狂"] },
-            "ENAJ": { title: "阳光小巡警", desc: "对世界充满好奇，但最爱的还是你。聪明听话，走到哪里都要跟你汇报。", tags: ["好奇宝宝", "聪明俐落"] },
-            "ENAP": { title: "乐天派二哈", desc: "脑洞极大，精力极其旺盛！走到哪拆到哪，犯错后还会撒娇求原谅。", tags: ["拆迁办主任", "脑洞清奇"] },
-            "ENTJ": { title: "居委会主任", desc: "热心肠，爱管闲事，充满探索精神且遵守纪律，小区里的汪星人领袖。", tags: ["老干部", "爱管闲事"] },
-            "ENTP": { title: "整活发明家", desc: "哈士奇精神内核！总能想出一百种让你崩溃的新玩法，聪明全用在搞破坏上了。", tags: ["整活大师", "反骨仔"] },
-            "IFAJ": { title: "沙发土豆", desc: "胆子小，只粘你一个人。最大的爱好就是趴在你腿上等投喂，软糯可欺。", tags: ["软糯小甜豆", "躺平大师"] },
-            "IFAP": { title: "绿茶小作精", desc: "表面楚楚可怜惹人疼，背地里为了偷吃零食能把家里翻个底朝天。", tags: ["两副面孔", "偷吃王者"] },
-            "IFTJ": { title: "佛系美食家", desc: "狗生格言：“吃饱了就睡”。高冷不惹事，只对饭盆里的东西有反应。", tags: ["看破红尘", "只爱吃饭"] },
-            "IFTP": { title: "偷吃特种兵", desc: "独来独往的暗影刺客，平时不理人，但家里的肉干总是离奇失踪。", tags: ["暗影刺客", "干饭无影手"] },
-            "INAJ": { title: "社恐小跟班", desc: "对外面的世界充满警惕，默默观察一切，只有躲在你身后才有安全感。", tags: ["重度社恐", "只爱你"] },
-            "INAP": { title: "粘人神经质", desc: "胆小又爱玩，常常被自己吓到。只敢在家里称王称霸，一出门就秒怂。", tags: ["窝里横", "一惊一乍"] },
-            "INTJ": { title: "哲学思考狗", desc: "经常静静地看着窗外思考狗生，拥有丰富的精神世界，高冷且自律。", tags: ["思想家", "高冷总裁"] },
-            "INTP": { title: "闷骚破坏王", desc: "平时一声不吭，趁你不在的时候默默搞个大的，致力于研究沙发内部结构。", tags: ["拆家学者", "好奇心重"] }
+            "EFAJ": { title: "甜心饭桶", desc: "万物皆可吃，只要你给的我都爱！最爱贴贴，社交满分的暖心小天使。", tags: ["社交悍匪", "干饭狂魔"], stats: [95, 90, 40] },
+            "EFAP": { title: "社交显眼包", desc: "为了混口饭吃什么绝活都能整出来，到处散发魅力，是个有点小调皮的公关大师。", tags: ["骗吃骗喝", "有点皮"], stats: [80, 85, 60] },
+            "EFTJ": { title: "巡场干饭王", desc: "热情开朗但很有原则（尤其是对食物），是个守规矩的好狗狗。", tags: ["热情保安", "吃饭第一"], stats: [60, 70, 80] },
+            "EFTP": { title: "街头小霸王", desc: "热情奔放，为了一口吃的敢于挑战一切规则，谁也管不住。", tags: ["放荡不羁", "为食痴狂"], stats: [90, 60, 50] },
+            "ENAJ": { title: "阳光小巡警", desc: "对世界充满好奇，但最爱的还是你。聪明听话，走到哪里都要跟你汇报。", tags: ["好奇宝宝", "聪明"], stats: [50, 95, 90] },
+            "ENAP": { title: "乐天派二哈", desc: "脑洞极大，精力极其旺盛！走到哪拆到哪，犯错后还会撒娇求原谅。", tags: ["拆迁办", "脑洞清奇"], stats: [98, 80, 40] },
+            "ENTJ": { title: "居委会主任", desc: "热心肠，爱管闲事，充满探索精神且遵守纪律，小区里的领袖。", tags: ["老干部", "爱管闲事"], stats: [40, 70, 95] },
+            "ENTP": { title: "整活发明家", desc: "哈士奇精神内核！总能想出一百种让你崩溃的新玩法，聪明全在搞破坏。", tags: ["整活大师", "反骨仔"], stats: [95, 50, 98] },
+            "IFAJ": { title: "沙发土豆", desc: "胆子小，只粘你一个人。最大的爱好就是趴在你腿上等投喂。", tags: ["软糯小甜豆", "躺平"], stats: [20, 98, 30] },
+            "IFAP": { title: "绿茶小作精", desc: "表面楚楚可怜惹人疼，背地里为了偷吃零食能把家里翻个底朝天。", tags: ["两副面孔", "偷吃王"], stats: [70, 85, 50] },
+            "IFTJ": { title: "佛系美食家", desc: "狗生格言：“吃饱了就睡”。高冷不惹事，只对饭盆有反应。", tags: ["看破红尘", "只爱饭"], stats: [10, 40, 60] },
+            "IFTP": { title: "偷吃特种兵", desc: "独来独往，平时不理人，但家里的肉干总是离奇失踪。", tags: ["暗影刺客", "手速快"], stats: [85, 20, 70] },
+            "INAJ": { title: "社恐小跟班", desc: "对外面的世界充满警惕，只有躲在你身后才有安全感。", tags: ["重度社恐", "只爱你"], stats: [15, 98, 85] },
+            "INAP": { title: "粘人神经质", desc: "胆小又爱玩，常常被自己吓到。只敢在家里称王称霸。", tags: ["窝里横", "一惊一乍"], stats: [75, 90, 45] },
+            "INTJ": { title: "哲学思考狗", desc: "经常静静地看着窗外思考狗生，拥有丰富的精神世界，高冷且自律。", tags: ["思想家", "高冷总裁"], stats: [20, 30, 95] },
+            "INTP": { title: "闷骚破坏王", desc: "平时一声不吭，趁你不在的时候默默搞个大的，致力于拆解沙发。", tags: ["拆家学者", "好奇心"], stats: [90, 20, 95] }
         };
+
+        const questions = [
+            { id: 1, text: "散步时遇到陌生的狗狗，它的第一反应？", options: [{ text: "热情地冲上去闻屁股，疯狂摇尾巴", trait: "E" }, { text: "躲在你身后，或者假装没看见默默走开", trait: "I" }] },
+            { id: 2, text: "家里来陌生的客人时，它的表现是？", options: [{ text: "兴奋到模糊！扑上去求摸摸", trait: "E" }, { text: "保持警惕，或者回到窝里默默观察", trait: "I" }] },
+            { id: 3, text: "带它去宠物公园，它怎么玩？", options: [{ text: "满场飞奔，跟谁都能迅速打成一片", trait: "E" }, { text: "只喜欢跟着你，或者自己在角落闻闻", trait: "I" }] },
+            { id: 4, text: "如果它正在熟睡，什么声音能让它瞬间弹起？", options: [{ text: "零食袋撕开的“呲啦”声！", trait: "F" }, { text: "门外奇怪的脚步声或者门铃声", trait: "N" }] },
+            { id: 5, text: "你给它买了一个奇形怪状的新玩具，它会？", options: [{ text: "咬两口发现不能吃，就扔在一边不管了", trait: "F" }, { text: "兴奋地研究、拆解，能自己玩上好半天", trait: "N" }] },
+            { id: 6, text: "你坐在沙发上看电视，它通常会在哪里？", options: [{ text: "必须紧紧贴着你，甚至要坐在你身上", trait: "A" }, { text: "自己在狗窝里，或者沙发的另一端躺着", trait: "T" }] },
+            { id: 7, text: "你准备出门上班，关门那一刻它的眼神？", options: [{ text: "依依不舍，甚至扒着门嘤嘤叫求带走", trait: "A" }, { text: "毫无波澜，甚至转身回窝准备补觉", trait: "T" }] },
+            { id: 8, text: "当它独自在家大半天后，你回家看到的场景？", options: [{ text: "一切如常，它甚至还在原来的位置睡觉", trait: "J" }, { text: "垃圾桶倒了，拖鞋少了一只，沙发有个坑", trait: "P" }] }
+        ];
 
         function App() {
             const [gameState, setGameState] = useState('start');
@@ -134,50 +117,27 @@
                 }
             };
 
-            const handlePhotoUpload = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => setUserPhoto(ev.target.result);
-                    reader.readAsDataURL(file);
-                }
-            };
-
             const saveCardAsImage = () => {
-                if (resultRef.current) {
-                    html2canvas(resultRef.current, {
-                        backgroundColor: "#f5f4f0",
-                        scale: 3,
-                        useCORS: true
-                    }).then(canvas => {
-                        const link = document.createElement('a');
-                        link.download = `PawPawBI_${finalType}.png`;
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
-                    });
-                }
+                html2canvas(resultRef.current, { backgroundColor: "#f5f4f0", scale: 3 }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `PawPawBI_Result.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
             };
 
             return (
-                <div className="w-full h-full flex items-center justify-center p-6 box-border" style={{ minHeight: '100dvh' }}>
-                    
+                <div className="w-full h-full flex items-center justify-center p-4 box-border">
                     <div className="main-container">
-                        
-                        <div className="absolute top-6 left-6 text-xl opacity-20 rotate-[-20deg]">🐾</div>
-                        <div className="absolute top-10 right-8 text-xl opacity-10 rotate-[15deg]">💩</div>
-
                         <div className="p-6 flex flex-col h-full relative z-10">
                             
                             {gameState === 'start' && (
                                 <div className="h-full flex flex-col items-center justify-center text-center">
-                                    <div className="relative mb-8">
-                                        <div className="text-8xl animate-dog">🐶</div>
-                                        <div className="absolute -bottom-2 -right-4 text-3xl">🦴</div>
-                                    </div>
-                                    <h1 className="text-4xl font-black text-stone-800 mb-2 tracking-tighter">PAW PAW BI</h1>
-                                    <p className="text-stone-500 font-bold text-sm mb-12 border-b-2 border-stone-800 pb-1 px-4">汪星人 绝密 档案</p>
-                                    <button onClick={() => setGameState('playing')} className="w-60 bg-stone-800 text-white font-bold py-5 rounded-2xl shadow-[6px_6px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all text-xl">
-                                        START 🐾
+                                    <div className="text-7xl animate-dog mb-8">🐶</div>
+                                    <h1 className="text-3xl font-black text-stone-800 mb-2 tracking-tighter">PAWPAW BI</h1>
+                                    <p className="text-stone-400 font-bold text-[10px] mb-12 tracking-widest border-b border-stone-100 pb-1">汪星人绝密性格档案</p>
+                                    <button onClick={() => setGameState('playing')} className="w-full bg-stone-800 text-white font-bold py-4 rounded-2xl shadow-[5px_5px_0px_#fde047] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-lg uppercase tracking-tight">
+                                        开始测试 🐾
                                     </button>
                                 </div>
                             )}
@@ -185,17 +145,16 @@
                             {gameState === 'playing' && (
                                 <div className="h-full flex flex-col">
                                     <div className="mt-2 mb-4 flex items-center justify-between">
-                                        <span className="text-[10px] font-black text-stone-400 tracking-widest uppercase">TESTING...</span>
-                                        <span className="text-[10px] font-black text-stone-800">{currentQIndex + 1}/15</span>
+                                        <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase">Analyzing...</span>
+                                        <span className="text-[9px] font-black text-stone-800">{currentQIndex + 1}/{questions.length}</span>
                                     </div>
-                                    <div className="w-full bg-stone-100 h-2.5 rounded-full border-2 border-stone-800 overflow-hidden mb-8">
-                                        <div className="bg-yellow-400 h-full transition-all" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
+                                    <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-8">
+                                        <div className="bg-stone-800 h-full transition-all" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
                                     </div>
-                                    <h2 className="text-xl font-black text-stone-800 mb-6 leading-tight min-h-[60px]">{questions[currentQIndex].text}</h2>
+                                    <h2 className="text-xl font-black text-stone-800 mb-8 leading-tight">{questions[currentQIndex].text}</h2>
                                     <div className="space-y-3">
                                         {questions[currentQIndex].options.map((opt, i) => (
-                                            <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-5 border-[3px] border-stone-800 rounded-2xl hover:bg-yellow-50 active:bg-yellow-100 transition-all font-bold text-stone-800 text-sm text-left flex items-center gap-3">
-                                                <span>{i === 0 ? '🐶' : '🦴'}</span>
+                                            <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-4 border-2 border-stone-800 rounded-xl hover:bg-yellow-50/50 active:bg-yellow-50 transition-all font-bold text-stone-800 text-sm text-left">
                                                 {opt.text}
                                             </button>
                                         ))}
@@ -204,51 +163,59 @@
                             )}
 
                             {gameState === 'result' && (
-                                <div className="h-full flex flex-col justify-between animate-fade-in no-scrollbar overflow-y-auto">
-                                    <div ref={resultRef} className="flex flex-col items-center bg-white p-1">
-                                        <div className="instax-photo-area transform rotate-[-1deg] mb-4">
-                                            <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative border border-stone-100">
-                                                {userPhoto ? (
-                                                    <img src={userPhoto} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div onClick={() => document.getElementById('dogInput').click()} className="cursor-pointer text-center p-4">
-                                                        <div className="text-4xl">📸</div>
-                                                        <p className="text-[10px] mt-2 text-stone-400 font-black uppercase">Snap Your Dog</p>
+                                <div className="h-full flex flex-col justify-between">
+                                    <div ref={resultRef} className="bg-white p-2 flex flex-col items-center">
+                                        <div className="instax-photo-area transform rotate-[-1deg] mb-4 border border-stone-50 shadow-sm">
+                                            <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative shadow-inner">
+                                                {userPhoto ? <img src={userPhoto} className="w-full h-full object-cover" /> : 
+                                                    <div onClick={() => document.getElementById('dogInput').click()} className="text-center p-4 cursor-pointer">
+                                                        <div className="text-3xl mb-1 opacity-50">📸</div>
+                                                        <p className="text-[8px] text-stone-300 font-black uppercase tracking-widest">Upload Photo</p>
                                                     </div>
-                                                )}
-                                                <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={handlePhotoUpload} />
-                                                <div className="absolute bottom-2 right-2 w-8 h-8 stamp bg-white/40">
-                                                    <span className="text-[5px]">PAW BI</span>
+                                                }
+                                                <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={(e) => {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (ev) => setUserPhoto(ev.target.result);
+                                                    reader.readAsDataURL(e.target.files[0]);
+                                                }} />
+                                                <div className="absolute bottom-2 right-2 w-9 h-9 rounded-full border border-stone-200/50 flex items-center justify-center rotate-12 bg-white/20 backdrop-blur-[1px]">
+                                                    <span className="text-[5px] text-stone-300 font-black text-center uppercase">Paw<br/>BI</span>
                                                 </div>
                                             </div>
+                                            <div className="absolute bottom-1.5 left-4 handwriting text-stone-300 text-sm">{new Date().toLocaleDateString()}</div>
                                         </div>
 
-                                        <div className="text-center mb-2">
-                                            <div className="inline-block bg-yellow-300 text-stone-800 font-black text-[10px] px-2 py-0.5 mb-2 shadow-[2px_2px_0px_#000]">
-                                                #{finalType}
-                                            </div>
-                                            <h2 className="text-2xl font-black text-stone-800 mb-1 uppercase">{resultsData[finalType].title}</h2>
+                                        <div className="text-center w-full">
+                                            <div className="inline-block tape text-stone-800 font-black text-[10px] px-3 py-0.5 mb-2 uppercase tracking-wide">TYPE: {finalType}</div>
+                                            <h2 className="text-2xl font-black text-stone-800 mb-3 tracking-tight uppercase">{resultsData[finalType].title}</h2>
                                             
-                                            {/* 补全：结果页标签 Tags */}
-                                            <div className="flex justify-center gap-2 mb-3">
-                                                {resultsData[finalType].tags.map((tag, idx) => (
-                                                    <span key={idx} className="text-[9px] font-bold bg-stone-100 text-stone-500 px-2 py-0.5 rounded-full border border-stone-200">
-                                                        #{tag}
-                                                    </span>
+                                            <div className="flex justify-center gap-3 mb-4 scale-95">
+                                                {['拆家', '粘人', '智商'].map((label, idx) => (
+                                                    <div key={idx} className="flex flex-col items-center">
+                                                        <span className="text-[7px] font-bold text-stone-400 mb-1">{label}</span>
+                                                        <div className="stat-bar"><div className="stat-fill" style={{width: `${resultsData[finalType].stats[idx]}%`}}></div></div>
+                                                    </div>
                                                 ))}
                                             </div>
 
-                                            <p className="serif-font text-stone-600 text-[11px] italic px-2 leading-relaxed">“{resultsData[finalType].desc}”</p>
+                                            <p className="serif-font text-stone-500 text-[10px] leading-relaxed italic px-4 mb-2">“{resultsData[finalType].desc}”</p>
+                                            
+                                            <div className="flex justify-center gap-2 mb-4">
+                                                {resultsData[finalType].tags.map((tag, idx) => (
+                                                    <span key={idx} className="text-[8px] font-bold text-stone-300">#{tag}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* 底部品牌补位 */}
+                                        <div className="mt-2 mb-2 pt-2 border-t border-stone-50 w-full flex justify-center opacity-20">
+                                            <span className="text-[8px] font-black tracking-[0.2em] text-stone-800 uppercase">PawPaw BI性格研究所</span>
                                         </div>
                                     </div>
 
                                     <div className="flex flex-col gap-2 mt-auto pb-2">
-                                        <button onClick={saveCardAsImage} className="w-full py-4 text-sm font-black uppercase bg-yellow-400 border-[4px] border-stone-800 rounded-2xl shadow-[4px_4px_0px_#000] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
-                                            SAVE PHOTO 📸
-                                        </button>
-                                        <button onClick={() => window.location.reload()} className="w-full py-2 text-[10px] font-black text-stone-400 uppercase tracking-widest">
-                                            RETAKE 🐾
-                                        </button>
+                                        <button onClick={saveCardAsImage} className="w-full py-4 text-xs font-black bg-yellow-400 border-[3px] border-stone-800 rounded-xl shadow-[4px_4px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase tracking-wider">保存结果 📸</button>
+                                        <button onClick={() => window.location.reload()} className="py-1 text-[9px] font-black text-stone-300 uppercase tracking-widest hover:text-stone-800 transition-colors">再次测试</button>
                                     </div>
                                 </div>
                             )}
