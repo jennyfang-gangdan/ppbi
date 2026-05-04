@@ -6,7 +6,6 @@
     <title>PawPaw BI - 汪星人性格测试</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <!-- 修正后的 React DOM 路径 -->
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -26,10 +25,11 @@
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e5e4df' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5 40c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/%3E%3C/g%3E%3C/svg%3E");
         }
 
+        /* 核心优化：动态高度适配 */
         .main-container {
-            width: 88vw;
-            max-width: 350px;
-            aspect-ratio: 350 / 680; 
+            width: 90vw;
+            max-width: 360px;
+            max-height: 82dvh; /* 确保不被手机工具栏遮挡 */
             background: white;
             border-radius: 40px;
             border: 8px solid #1c1917; 
@@ -42,9 +42,9 @@
 
         .instax-photo-area {
             width: 100%;
-            aspect-ratio: 46 / 58;
+            aspect-ratio: 46 / 56;
             background: white;
-            padding: 10px 10px 28px 10px;
+            padding: 8px 8px 32px 8px; /* 增加底部留白给日期 */
             box-shadow: 0 8px 25px rgba(0,0,0,0.04);
             position: relative;
         }
@@ -59,7 +59,8 @@
         .stat-fill { height: 100%; background: #1c1917; }
 
         html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f5f4f0; }
-        #root { height: 100%; width: 100%; }
+        #root { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-pattern">
@@ -128,101 +129,105 @@
             };
 
             return (
-                <div className="w-full h-full flex items-center justify-center p-4 box-border">
-                    <div className="main-container">
-                        <div className="p-6 flex flex-col h-full relative z-10">
-                            
-                            {gameState === 'start' && (
-                                <div className="h-full flex flex-col items-center justify-center text-center">
-                                    <div className="text-7xl animate-dog mb-8">🐶</div>
-                                    <h1 className="text-3xl font-black text-stone-800 mb-2 tracking-tighter">PAWPAW BI</h1>
-                                    <p className="text-stone-400 font-bold text-[10px] mb-12 tracking-widest border-b border-stone-100 pb-1">汪星人绝密性格档案</p>
-                                    <button onClick={() => setGameState('playing')} className="w-full bg-stone-800 text-white font-bold py-4 rounded-2xl shadow-[5px_5px_0px_#fde047] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-lg uppercase tracking-tight">
-                                        开始测试 🐾
-                                    </button>
-                                </div>
-                            )}
+                <div className="main-container no-scrollbar overflow-y-auto">
+                    <div className="p-6 flex flex-col min-h-full relative z-10">
+                        
+                        {gameState === 'start' && (
+                            <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
+                                <div className="text-7xl animate-dog mb-8">🐶</div>
+                                <h1 className="text-3xl font-black text-stone-800 mb-2 tracking-tighter">PAWPAW BI</h1>
+                                <p className="text-stone-400 font-bold text-[10px] mb-12 tracking-widest border-b border-stone-100 pb-1">汪星人绝密性格档案</p>
+                                <button onClick={() => setGameState('playing')} className="w-full bg-stone-800 text-white font-bold py-4 rounded-2xl shadow-[5px_5px_0px_#fde047] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-lg uppercase tracking-tight">
+                                    开始测试 🐾
+                                </button>
+                            </div>
+                        )}
 
-                            {gameState === 'playing' && (
-                                <div className="h-full flex flex-col">
-                                    <div className="mt-2 mb-4 flex items-center justify-between">
-                                        <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase">Analyzing...</span>
-                                        <span className="text-[9px] font-black text-stone-800">{currentQIndex + 1}/{questions.length}</span>
-                                    </div>
-                                    <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-8">
-                                        <div className="bg-stone-800 h-full transition-all" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
-                                    </div>
-                                    <h2 className="text-xl font-black text-stone-800 mb-8 leading-tight">{questions[currentQIndex].text}</h2>
-                                    <div className="space-y-3">
-                                        {questions[currentQIndex].options.map((opt, i) => (
-                                            <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-4 border-2 border-stone-800 rounded-xl hover:bg-yellow-50/50 active:bg-yellow-50 transition-all font-bold text-stone-800 text-sm text-left">
-                                                {opt.text}
-                                            </button>
-                                        ))}
-                                    </div>
+                        {gameState === 'playing' && (
+                            <div className="flex-1 flex flex-col pt-4">
+                                <div className="mb-4 flex items-center justify-between">
+                                    <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase">Analyzing...</span>
+                                    <span className="text-[9px] font-black text-stone-800">{currentQIndex + 1}/{questions.length}</span>
                                 </div>
-                            )}
+                                <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-8">
+                                    <div className="bg-stone-800 h-full transition-all" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
+                                </div>
+                                <h2 className="text-xl font-black text-stone-800 mb-8 leading-tight">{questions[currentQIndex].text}</h2>
+                                <div className="space-y-3">
+                                    {questions[currentQIndex].options.map((opt, i) => (
+                                        <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-4 border-2 border-stone-800 rounded-xl hover:bg-yellow-50/50 active:bg-yellow-50 transition-all font-bold text-stone-800 text-sm text-left">
+                                            {opt.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                            {gameState === 'result' && (
-                                <div className="h-full flex flex-col justify-between">
-                                    <div ref={resultRef} className="bg-white p-2 flex flex-col items-center">
-                                        <div className="instax-photo-area transform rotate-[-1deg] mb-4 border border-stone-50 shadow-sm">
-                                            <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative shadow-inner">
-                                                {userPhoto ? <img src={userPhoto} className="w-full h-full object-cover" /> : 
-                                                    <div onClick={() => document.getElementById('dogInput').click()} className="text-center p-4 cursor-pointer">
-                                                        <div className="text-3xl mb-1 opacity-50">📸</div>
-                                                        <p className="text-[8px] text-stone-300 font-black uppercase tracking-widest">Upload Photo</p>
-                                                    </div>
-                                                }
-                                                <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onload = (ev) => setUserPhoto(ev.target.result);
-                                                        reader.readAsDataURL(file);
-                                                    }
-                                                }} />
-                                                <div className="absolute bottom-2 right-2 w-9 h-9 rounded-full border border-stone-200/50 flex items-center justify-center rotate-12 bg-white/20 backdrop-blur-[1px]">
-                                                    <span className="text-[5px] text-stone-300 font-black text-center uppercase">Paw<br/>BI</span>
+                        {gameState === 'result' && (
+                            <div className="flex-1 flex flex-col justify-between py-2">
+                                <div ref={resultRef} className="bg-white p-2 flex flex-col items-center">
+                                    {/* 拍立得区域 */}
+                                    <div className="instax-photo-area transform rotate-[-1deg] mb-4 border border-stone-100 shadow-sm">
+                                        <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative shadow-inner">
+                                            {userPhoto ? <img src={userPhoto} className="w-full h-full object-cover" /> : 
+                                                <div onClick={() => document.getElementById('dogInput').click()} className="text-center p-4 cursor-pointer">
+                                                    <div className="text-3xl mb-1 opacity-50">📸</div>
+                                                    <p className="text-[8px] text-stone-300 font-black uppercase tracking-widest">Upload Photo</p>
                                                 </div>
-                                            </div>
-                                            <div className="absolute bottom-1.5 left-4 handwriting text-stone-300 text-sm">{new Date().toLocaleDateString()}</div>
-                                        </div>
-
-                                        <div className="text-center w-full">
-                                            <div className="inline-block tape text-stone-800 font-black text-[10px] px-3 py-0.5 mb-2 uppercase tracking-wide">TYPE: {finalType}</div>
-                                            <h2 className="text-2xl font-black text-stone-800 mb-3 tracking-tight uppercase">{resultsData[finalType].title}</h2>
-                                            
-                                            <div className="flex justify-center gap-3 mb-4 scale-95">
-                                                {['拆家', '粘人', '智商'].map((label, idx) => (
-                                                    <div key={idx} className="flex flex-col items-center">
-                                                        <span className="text-[7px] font-bold text-stone-400 mb-1">{label}</span>
-                                                        <div className="stat-bar"><div className="stat-fill" style={{width: `${resultsData[finalType].stats[idx]}%`}}></div></div>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            <p className="serif-font text-stone-500 text-[10px] leading-relaxed italic px-4 mb-2">“{resultsData[finalType].desc}”</p>
-                                            
-                                            <div className="flex justify-center gap-2 mb-4">
-                                                {resultsData[finalType].tags.map((tag, idx) => (
-                                                    <span key={idx} className="text-[8px] font-bold text-stone-300">#{tag}</span>
-                                                ))}
+                                            }
+                                            <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={(e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (ev) => setUserPhoto(ev.target.result);
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }} />
+                                            <div className="absolute bottom-2 right-2 w-9 h-9 rounded-full border border-stone-200 flex items-center justify-center rotate-12 bg-white/20 backdrop-blur-[1px]">
+                                                <span className="text-[5px] text-stone-400 font-black text-center uppercase">Paw<br/>BI</span>
                                             </div>
                                         </div>
-
-                                        <div className="mt-2 mb-2 pt-2 border-t border-stone-50 w-full flex justify-center opacity-20">
-                                            <span className="text-[8px] font-black tracking-[0.2em] text-stone-800 uppercase">PawPaw BI性格研究所</span>
+                                        {/* 优化：加深时间戳颜色 & 调整位置 */}
+                                        <div className="absolute bottom-2 left-4 handwriting text-stone-500 text-lg font-bold">
+                                            {new Date().toLocaleDateString()}
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col gap-2 mt-auto pb-2">
-                                        <button onClick={saveCardAsImage} className="w-full py-4 text-xs font-black bg-yellow-400 border-[3px] border-stone-800 rounded-xl shadow-[4px_4px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase tracking-wider">保存结果 📸</button>
-                                        <button onClick={() => window.location.reload()} className="py-1 text-[9px] font-black text-stone-300 uppercase tracking-widest hover:text-stone-800 transition-colors">再次测试</button>
+                                    <div className="text-center w-full">
+                                        <div className="inline-block tape text-stone-800 font-black text-[10px] px-3 py-0.5 mb-2 uppercase tracking-wide">TYPE: {finalType}</div>
+                                        <h2 className="text-2xl font-black text-stone-800 mb-3 tracking-tight uppercase">{resultsData[finalType].title}</h2>
+                                        
+                                        {/* 优化：加深属性文案颜色 */}
+                                        <div className="flex justify-center gap-3 mb-4 scale-95">
+                                            {['拆家', '粘人', '智商'].map((label, idx) => (
+                                                <div key={idx} className="flex flex-col items-center">
+                                                    <span className="text-[8px] font-bold text-stone-600 mb-1">{label}</span>
+                                                    <div className="stat-bar"><div className="stat-fill" style={{width: `${resultsData[finalType].stats[idx]}%`}}></div></div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <p className="serif-font text-stone-600 text-[10px] leading-relaxed italic px-4 mb-3">“{resultsData[finalType].desc}”</p>
+                                        
+                                        {/* 优化：加深标签颜色和粗细 */}
+                                        <div className="flex justify-center gap-3 mb-4">
+                                            {resultsData[finalType].tags.map((tag, idx) => (
+                                                <span key={idx} className="text-[10px] font-black text-stone-600">#{tag}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-1 mb-2 pt-2 border-t border-stone-50 w-full flex justify-center opacity-30">
+                                        <span className="text-[8px] font-black tracking-[0.2em] text-stone-800 uppercase">PawPaw BI性格研究所</span>
                                     </div>
                                 </div>
-                            )}
-                        </div>
+
+                                <div className="flex flex-col gap-2 mt-4">
+                                    <button onClick={saveCardAsImage} className="w-full py-4 text-xs font-black bg-yellow-400 border-[3px] border-stone-800 rounded-xl shadow-[4px_4px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase tracking-wider">保存结果 📸</button>
+                                    <button onClick={() => window.location.reload()} className="py-1 text-[9px] font-black text-stone-400 uppercase tracking-widest hover:text-stone-800 transition-colors">再次测试</button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             );
