@@ -25,30 +25,23 @@
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e5e4df' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM5 40c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm15 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'/%3E%3C/g%3E%3C/svg%3E");
         }
 
-        /* --- 核心锚定：锁定外层容器 --- */
-        .fixed-screen-container {
-            width: 85vw;
-            max-width: 360px;
-            /* 锚定 iPhone 13/14 比例 */
-            aspect-ratio: 390 / 844; 
-            /* 动态视口高度，防止手机底栏遮挡 */
-            max-height: 88dvh; 
-            background: white;
-            border-radius: 40px;
-            border: 8px solid #1c1917; 
+        /* 移除外层黑边，改用全屏无缝容器 */
+        .content-wrapper {
+            width: 100%;
+            max-width: 500px;
+            min-height: 100dvh;
+            margin: 0 auto;
             position: relative;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
 
         .instax-photo-area {
             width: 100%;
-            aspect-ratio: 1 / 1.2; /* 拍立得照片区域比例 */
+            aspect-ratio: 1 / 1.15;
             background: white;
-            padding: 8px 8px 35px 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 10px 10px 35px 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             position: relative;
         }
 
@@ -61,9 +54,8 @@
         .stat-bar { height: 4px; background: #f3f4f6; border-radius: 2px; width: 55px; overflow: hidden; }
         .stat-fill { height: 100%; background: #1c1917; }
 
-        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f5f4f0; }
-        #root { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+        html, body { min-height: 100%; margin: 0; padding: 0; background-color: #f5f4f0; }
+        #root { width: 100%; }
     </style>
 </head>
 <body class="bg-pattern">
@@ -91,15 +83,23 @@
             "INTP": { title: "闷骚破坏王", desc: "平时一声不吭，趁你不在的时候默默搞个大的，致力于拆解沙发。", tags: ["拆家学者", "好奇心"], stats: [90, 20, 95] }
         };
 
+        // 扩充至 15 道题目
         const questions = [
-            { id: 1, text: "散步时遇到陌生的狗狗，它的第一反应？", options: [{ text: "热情地冲上去闻屁股，疯狂摇尾巴", trait: "E" }, { text: "躲在你身后，或者假装没看见默默走开", trait: "I" }] },
-            { id: 2, text: "家里来陌生的客人时，它的表现是？", options: [{ text: "兴奋到模糊！扑上去求摸摸", trait: "E" }, { text: "保持警惕，或者回到窝里默默观察", trait: "I" }] },
-            { id: 3, text: "带它去宠物公园，它怎么玩？", options: [{ text: "满场飞奔，跟谁都能迅速打成一片", trait: "E" }, { text: "只喜欢跟着你，或者自己在角落闻闻", trait: "I" }] },
-            { id: 4, text: "如果它正在熟睡，什么声音能让它瞬间弹起？", options: [{ text: "零食袋撕开的“呲啦”声！", trait: "F" }, { text: "门外奇怪的脚步声或者门铃声", trait: "N" }] },
-            { id: 5, text: "你给它买了一个奇形怪状的新玩具，它会？", options: [{ text: "咬两口发现不能吃，就扔在一边不管了", trait: "F" }, { text: "兴奋地研究、拆解，能自己玩上好半天", trait: "N" }] },
-            { id: 6, text: "你坐在沙发上看电视，它通常会在哪里？", options: [{ text: "必须紧紧贴着你，甚至要坐在你身上", trait: "A" }, { text: "自己在狗窝里，或者沙发的另一端躺着", trait: "T" }] },
-            { id: 7, text: "你准备出门上班，关门那一刻它的眼神？", options: [{ text: "依依不舍，甚至扒着门嘤嘤叫求带走", trait: "A" }, { text: "毫无波澜，甚至转身回窝准备补觉", trait: "T" }] },
-            { id: 8, text: "当它独自在家大半天后，你回家看到的场景？", options: [{ text: "一切如常，它甚至还在原来的位置睡觉", trait: "J" }, { text: "垃圾桶倒了，拖鞋少了一只，沙发有个坑", trait: "P" }] }
+            { id: 1, text: "散步遇到陌生的狗，它的第一反应？", options: [{ text: "热情地冲上去闻屁股", trait: "E" }, { text: "躲在你身后默默观察", trait: "I" }] },
+            { id: 2, text: "家里来客人时，它的表现？", options: [{ text: "兴奋到模糊！求摸摸", trait: "E" }, { text: "保持警惕或回到窝里", trait: "I" }] },
+            { id: 3, text: "在狗公园里，它怎么玩？", options: [{ text: "满场飞奔到处社交", trait: "E" }, { text: "只跟着你或闻闻草地", trait: "I" }] },
+            { id: 4, text: "对于没见过的新奇食物？", options: [{ text: "管它呢，先吃了再说", trait: "F" }, { text: "先仔细闻闻观察半天", trait: "N" }] },
+            { id: 5, text: "面对一个会动的奇怪玩具？", options: [{ text: "被吓一跳但马上开撕", trait: "F" }, { text: "歪着头思考研究它的原理", trait: "N" }] },
+            { id: 6, text: "如果你假装哭泣，它会？", options: [{ text: "马上跑过来舔你安慰你", trait: "A" }, { text: "疑惑地看着你，然后走开", trait: "T" }] },
+            { id: 7, text: "当它犯错被你训斥时？", options: [{ text: "耳朵贴平，眼神委屈极了", trait: "A" }, { text: "眼神躲避，甚至试图顶嘴", trait: "T" }] },
+            { id: 8, text: "每天散步的时间点？", options: [{ text: "非常精准，到点就催你", trait: "J" }, { text: "随缘，你什么时候带它都行", trait: "P" }] },
+            { id: 9, text: "你换了新发型回家，它的反应？", options: [{ text: "依然秒认出你并疯狂欢迎", trait: "E" }, { text: "愣住几秒，怀疑地闻闻你", trait: "I" }] },
+            { id: 10, text: "如果家里突然搬家换了环境？", options: [{ text: "很快就开始到处巡视领地", trait: "N" }, { text: "萎靡几天，缩在角落不出来", trait: "F" }] },
+            { id: 11, text: "学习新动作（如握手）的速度？", options: [{ text: "为了零食秒会，执行精准", trait: "J" }, { text: "看心情，有时懂也装不懂", trait: "P" }] },
+            { id: 12, text: "它对小孩子的态度是？", options: [{ text: "温柔忍让，随便怎么摸", trait: "A" }, { text: "保持距离，不耐烦就溜", trait: "T" }] },
+            { id: 13, text: "睡觉时的位置通常在？", options: [{ text: "必须挨着你，或者钻被窝", trait: "A" }, { text: "喜欢睡在门口或地板中央", trait: "T" }] },
+            { id: 14, text: "你出门没带它，你回来时？", options: [{ text: "家里的拖鞋和纸巾遭了殃", trait: "P" }, { text: "它安稳地在门口等你", trait: "J" }] },
+            { id: 15, text: "它对世界的好奇心体现在？", options: [{ text: "哪里有洞钻哪里，爱探险", trait: "N" }, { text: "只对自己的一亩三分地感兴趣", trait: "F" }] }
         ];
 
         function App() {
@@ -125,41 +125,40 @@
             const saveCardAsImage = () => {
                 html2canvas(resultRef.current, { backgroundColor: "#f5f4f0", scale: 3 }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = `PawPawBI_Result.png`;
+                    link.download = `PawPawResult.png`;
                     link.href = canvas.toDataURL();
                     link.click();
                 });
             };
 
             return (
-                /* 统一容器类名与尺寸 */
-                <div className="fixed-screen-container no-scrollbar overflow-y-auto">
-                    <div className="p-6 flex flex-col min-h-full relative z-10">
+                <div className="content-wrapper">
+                    <div className="p-8 flex flex-col flex-1 relative z-10">
                         
                         {gameState === 'start' && (
-                            <div className="flex-1 flex flex-col items-center justify-center text-center py-6">
-                                <div className="text-7xl animate-dog mb-8">🐶</div>
-                                <h1 className="text-3xl font-black text-stone-800 mb-2 tracking-tighter">PAWPAW BI</h1>
-                                <p className="text-stone-400 font-bold text-[10px] mb-12 tracking-widest border-b border-stone-100 pb-1 uppercase">Detective Doggo Lab</p>
-                                <button onClick={() => setGameState('playing')} className="w-full bg-stone-800 text-white font-bold py-4 rounded-2xl shadow-[5px_5px_0px_#fde047] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-lg uppercase tracking-tight">
-                                    开始测试 🐾
+                            <div className="flex-1 flex flex-col items-center justify-center text-center">
+                                <div className="text-8xl animate-dog mb-10">🐶</div>
+                                <h1 className="text-4xl font-black text-stone-800 mb-2 tracking-tighter">PAWPAW BI</h1>
+                                <p className="text-stone-400 font-bold text-xs mb-16 tracking-[0.2em] border-b border-stone-200 pb-2 uppercase">Detective Doggo Lab</p>
+                                <button onClick={() => setGameState('playing')} className="w-full bg-stone-800 text-white font-bold py-5 rounded-2xl shadow-[6px_6px_0px_#fde047] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-xl uppercase tracking-tight">
+                                    开始测试 (15题) 🐾
                                 </button>
                             </div>
                         )}
 
                         {gameState === 'playing' && (
-                            <div className="flex-1 flex flex-col pt-4">
-                                <div className="mb-4 flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-stone-400 tracking-widest uppercase tracking-widest">Analyzing...</span>
-                                    <span className="text-[9px] font-black text-stone-800">{currentQIndex + 1}/{questions.length}</span>
+                            <div className="flex-1 flex flex-col pt-10">
+                                <div className="mb-6 flex items-center justify-between">
+                                    <span className="text-xs font-black text-stone-400 tracking-widest uppercase">Analyzing...</span>
+                                    <span className="text-xs font-black text-stone-800">{currentQIndex + 1}/{questions.length}</span>
                                 </div>
-                                <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mb-8">
+                                <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden mb-12">
                                     <div className="bg-stone-800 h-full transition-all" style={{width: `${((currentQIndex+1)/questions.length)*100}%`}}></div>
                                 </div>
-                                <h2 className="text-xl font-black text-stone-800 mb-8 leading-tight">{questions[currentQIndex].text}</h2>
-                                <div className="space-y-3">
+                                <h2 className="text-2xl font-black text-stone-800 mb-10 leading-tight min-h-[3.5rem]">{questions[currentQIndex].text}</h2>
+                                <div className="space-y-4">
                                     {questions[currentQIndex].options.map((opt, i) => (
-                                        <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-4 border-2 border-stone-800 rounded-xl hover:bg-yellow-50/50 active:bg-yellow-50 transition-all font-bold text-stone-800 text-sm text-left">
+                                        <button key={i} onClick={() => handleAnswer(opt.trait)} className="w-full p-5 border-2 border-stone-800 rounded-2xl hover:bg-yellow-50 active:bg-yellow-100 transition-all font-bold text-stone-800 text-base text-left shadow-sm">
                                             {opt.text}
                                         </button>
                                     ))}
@@ -168,14 +167,14 @@
                         )}
 
                         {gameState === 'result' && (
-                            <div className="flex-1 flex flex-col justify-between py-2">
-                                <div ref={resultRef} className="bg-white p-2 flex flex-col items-center">
-                                    <div className="instax-photo-area transform rotate-[-1deg] mb-4 border border-stone-100 shadow-sm">
+                            <div className="flex-1 flex flex-col justify-start py-4">
+                                <div ref={resultRef} className="bg-white p-4 flex flex-col items-center rounded-3xl shadow-xl">
+                                    <div className="instax-photo-area transform rotate-[-1deg] mb-6 border border-stone-100 shadow-sm">
                                         <div className="w-full h-full bg-stone-50 flex items-center justify-center overflow-hidden relative shadow-inner">
                                             {userPhoto ? <img src={userPhoto} className="w-full h-full object-cover" /> : 
                                                 <div onClick={() => document.getElementById('dogInput').click()} className="text-center p-4 cursor-pointer">
-                                                    <div className="text-3xl mb-1 opacity-50">📸</div>
-                                                    <p className="text-[8px] text-stone-300 font-black uppercase tracking-widest">Upload Photo</p>
+                                                    <div className="text-4xl mb-2 opacity-50">📸</div>
+                                                    <p className="text-[10px] text-stone-400 font-black uppercase tracking-widest">点击上传萌照</p>
                                                 </div>
                                             }
                                             <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={(e) => {
@@ -186,42 +185,45 @@
                                                     reader.readAsDataURL(file);
                                                 }
                                             }} />
-                                            <div className="absolute bottom-2 right-2 w-9 h-9 rounded-full border border-stone-200 flex items-center justify-center rotate-12 bg-white/20 backdrop-blur-[1px]">
-                                                <span className="text-[5px] text-stone-400 font-black text-center uppercase">Paw<br/>BI</span>
+                                            <div className="absolute bottom-2 right-2 w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center rotate-12 bg-white/30 backdrop-blur-[1px]">
+                                                <span className="text-[6px] text-stone-500 font-black text-center uppercase">Paw<br/>BI</span>
                                             </div>
                                         </div>
-                                        <div className="absolute bottom-2 left-4 handwriting text-stone-500 text-lg font-bold">
+                                        <div className="absolute bottom-2 left-5 handwriting text-stone-600 text-xl font-bold">
                                             {new Date().toLocaleDateString()}
                                         </div>
                                     </div>
 
                                     <div className="text-center w-full">
-                                        <div className="inline-block tape text-stone-800 font-black text-[10px] px-3 py-0.5 mb-2 uppercase tracking-wide">TYPE: {finalType}</div>
-                                        <h2 className="text-2xl font-black text-stone-800 mb-3 tracking-tight uppercase">{resultsData[finalType].title}</h2>
-                                        <div className="flex justify-center gap-3 mb-4 scale-95">
+                                        <div className="inline-block tape text-stone-800 font-black text-xs px-4 py-1 mb-3 uppercase tracking-wider">TYPE: {finalType}</div>
+                                        <h2 className="text-3xl font-black text-stone-800 mb-4 tracking-tight uppercase">{resultsData[finalType].title}</h2>
+                                        
+                                        <div className="flex justify-center gap-5 mb-6">
                                             {['拆家', '粘人', '智商'].map((label, idx) => (
                                                 <div key={idx} className="flex flex-col items-center">
-                                                    <span className="text-[8px] font-bold text-stone-600 mb-1">{label}</span>
+                                                    <span className="text-[10px] font-black text-stone-600 mb-1.5">{label}</span>
                                                     <div className="stat-bar"><div className="stat-fill" style={{width: `${resultsData[finalType].stats[idx]}%`}}></div></div>
                                                 </div>
                                             ))}
                                         </div>
-                                        <p className="serif-font text-stone-600 text-[10px] leading-relaxed italic px-4 mb-3">“{resultsData[finalType].desc}”</p>
-                                        <div className="flex justify-center gap-3 mb-4">
+
+                                        <p className="serif-font text-stone-600 text-xs leading-relaxed italic px-6 mb-6">“{resultsData[finalType].desc}”</p>
+                                        
+                                        <div className="flex justify-center gap-4 mb-6">
                                             {resultsData[finalType].tags.map((tag, idx) => (
-                                                <span key={idx} className="text-[10px] font-black text-stone-600">#{tag}</span>
+                                                <span key={idx} className="text-xs font-black text-stone-800 bg-stone-100 px-2 py-0.5 rounded">#{tag}</span>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <div className="mt-1 mb-2 pt-2 border-t border-stone-50 w-full flex justify-center opacity-30">
-                                        <span className="text-[8px] font-black tracking-[0.2em] text-stone-800 uppercase">PawPaw BI性格研究所</span>
+                                    <div className="mt-2 mb-2 pt-4 border-t border-stone-100 w-full flex justify-center opacity-40">
+                                        <span className="text-[9px] font-black tracking-[0.3em] text-stone-800 uppercase">PawPaw BI 性格研究所</span>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-2 mt-4 pb-2">
-                                    <button onClick={saveCardAsImage} className="w-full py-4 text-xs font-black bg-yellow-400 border-[3px] border-stone-800 rounded-xl shadow-[4px_4px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase tracking-wider">保存结果 📸</button>
-                                    <button onClick={() => window.location.reload()} className="py-1 text-[9px] font-black text-stone-400 uppercase tracking-widest hover:text-stone-800 transition-colors">再次测试</button>
+                                <div className="flex flex-col gap-3 mt-8 pb-10">
+                                    <button onClick={saveCardAsImage} className="w-full py-5 text-sm font-black bg-yellow-400 border-[3px] border-stone-800 rounded-2xl shadow-[6px_6px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all uppercase tracking-widest">保存我的结果卡片 📸</button>
+                                    <button onClick={() => window.location.reload()} className="py-2 text-xs font-black text-stone-400 uppercase tracking-widest hover:text-stone-800 transition-colors">重新测试</button>
                                 </div>
                             </div>
                         )}
