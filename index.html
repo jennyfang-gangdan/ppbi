@@ -6,7 +6,8 @@
     <title>PawPaw BI - 汪星人性格测试</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- 修正后的 React DOM 路径 -->
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -174,9 +175,12 @@
                                                     </div>
                                                 }
                                                 <input id="dogInput" type="file" className="hidden" accept="image/*" onChange={(e) => {
-                                                    const reader = new FileReader();
-                                                    reader.onload = (ev) => setUserPhoto(ev.target.result);
-                                                    reader.readAsDataURL(e.target.files[0]);
+                                                    const file = e.target.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (ev) => setUserPhoto(ev.target.result);
+                                                        reader.readAsDataURL(file);
+                                                    }
                                                 }} />
                                                 <div className="absolute bottom-2 right-2 w-9 h-9 rounded-full border border-stone-200/50 flex items-center justify-center rotate-12 bg-white/20 backdrop-blur-[1px]">
                                                     <span className="text-[5px] text-stone-300 font-black text-center uppercase">Paw<br/>BI</span>
@@ -207,7 +211,6 @@
                                             </div>
                                         </div>
 
-                                        {/* 底部品牌补位 */}
                                         <div className="mt-2 mb-2 pt-2 border-t border-stone-50 w-full flex justify-center opacity-20">
                                             <span className="text-[8px] font-black tracking-[0.2em] text-stone-800 uppercase">PawPaw BI性格研究所</span>
                                         </div>
